@@ -63,6 +63,13 @@ export default {
   }),
 
   created() {
+    this.$store.subscribeAction((action, state) => {
+      if (action.type === `${this.resourceName}/resetFilterState`) {
+        this.clearFilter()
+      }
+    });
+
+
     this.parseDates()
 
     this.debouncedHandleChange = debounce(() => this.handleChange(), 500)
@@ -146,6 +153,8 @@ export default {
     },
     clearFilter: function () {
       this.value = null
+      this.currentEndDate = null
+      this.currentStartDate = null
     },
     generateId: function () {
       return Math.random().toString(36).substring(2) +
