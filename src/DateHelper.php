@@ -92,11 +92,11 @@ class DateHelper
                 //Ex. 2020-06-15 to 2023-06-15
                 $parsed = explode(' to ', $value);
                 if (count($parsed) == 1) {
-                    $start = Carbon::createFromFormat('Y-m-d', $value);
+                    $start = Carbon::createFromFormat('Y-m-d H:i', $value);
                     $end = $start->clone();
                 } elseif (count($parsed) == 2) {
-                    $start = Carbon::createFromFormat('Y-m-d', $parsed[0]);
-                    $end = Carbon::createFromFormat('Y-m-d', $parsed[1]);
+                    $start = Carbon::createFromFormat('Y-m-d H:i', $parsed[0]);
+                    $end = Carbon::createFromFormat('Y-m-d H:i', $parsed[1]);
                 } else {
                     throw new Exception('Date range picker: Date format incorrect.');
                 }
