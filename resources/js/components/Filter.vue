@@ -17,7 +17,7 @@
           @keydown="handleInput($event)"
           @paste.prevent
         />
-        <div 
+        <div
           v-if="value"
           class="absolute top-0 right-0 mt-1 mr-1">
           <button class="bg-transparent"
@@ -71,9 +71,9 @@ export default {
 
   mounted() {
     this.id = 'dateRangeCalendar_' + this.generateId()
-    
+
     Nova.$on('filter-reset', this.setCurrentFilterValue)
-    
+
     setTimeout(() => {
       this.initDateRange()
     }, 1);
@@ -101,7 +101,7 @@ export default {
       this.$store.commit(`${this.resourceName}/updateFilterState`, {
         filterClass: this.filterKey,
         value: (
-          (this.currentStartDate && this.currentEndDate) ? 
+          (this.currentStartDate && this.currentEndDate) ?
           (this.currentStartDate.format('YYYY-MM-DD') + ' to ' + this.currentEndDate.format('YYYY-MM-DD')) :
           null
         ),
@@ -120,8 +120,10 @@ export default {
       const idSelector = ('#' + this.id)
       const minDate = ref.filter.minDate
       const maxDate = ref.filter.maxDate
+      const dateTimeRange = ref.filter.dateTimeRange
 
       $(idSelector).daterangepicker({
+        "timePicker":  dateTimeRange ?? false,
         "startDate": ref.startDate,
 			  "endDate": ref.endDate,
         "minDate": (minDate ? moment(minDate) : null),
