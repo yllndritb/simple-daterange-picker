@@ -44,7 +44,7 @@ class DateHelper
         ];
     }
 
-    public static function getParsedDatesGroupedRanges($value, $dateTimeRange = false): array
+    public static function getParsedDatesGroupedRanges($value): array
     {
         if ($value == self::ALL)
             return [null, null];
@@ -101,30 +101,10 @@ class DateHelper
                     throw new Exception('Date range picker: Date format incorrect.');
                 }
         }
-        if ($dateTimeRange) {
-            return [
-                self::roundNearestUpperHalfHour($start),
-                self::roundNearestUpperHalfHour($end)
-            ];
-        }
+
         return [
-            $start->setTime(0, 0, 0),
-            $end->setTime(23, 59, 59),
+            $start,
+            $end,
         ];
-    }
-
-    /**
-     * @param Carbon $date
-     * @return Carbon
-     */
-    public static function roundNearestUpperHalfHour(Carbon $date): Carbon
-    {
-        if ($date->minute > 30) {
-            $date->addHour()->minute = 0;
-        } else {
-            $date->minute = 30;
-        }
-
-        return $date;
     }
 }

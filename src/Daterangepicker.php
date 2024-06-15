@@ -14,7 +14,6 @@ class Daterangepicker extends Filter
     private Carbon|null $minDate = null;
     private Carbon|null $maxDate = null;
     private array|null $ranges = null;
-    private bool $dateTimeRange = false;
 
     public function __construct(
         private string $column,
@@ -76,11 +75,8 @@ class Daterangepicker extends Filter
     {
         [$start, $end] = Helper::getParsedDatesGroupedRanges($this->default);
 
-        if ($start && $end && !$this->dateTimeRange) {
-            return $start->format('Y-m-d') . ' to ' . $end->format('Y-m-d');
-        }
 
-        if ($start && $end && $this->dateTimeRange) {
+        if ($start && $end) {
             return $start->format('Y-m-d H:i') . ' to ' . $end->format('Y-m-d H:i');
         }
 
@@ -98,17 +94,6 @@ class Daterangepicker extends Filter
         return $this;
     }
 
-
-    /**
-     * @param bool $dateTimeRange
-     * @return $this
-     */
-    public function useDateTimeRange(bool $dateTimeRange = true): self
-    {
-        $this->dateTimeRange = $dateTimeRange;
-
-        return $this;
-    }
 
     public function setMaxDate(Carbon $maxDate): self
     {
@@ -128,14 +113,9 @@ class Daterangepicker extends Filter
     public function setRanges(array $ranges): self
     {
         $result = [];
-        $dateTimeRange = $this->dateTimeRange;
-        $result = collect($ranges)->mapWithKeys(function (array $item, string $key) use ($dateTimeRange) {
-            return [$key => (collect($item)->map(function (Carbon $date) use ($dateTimeRange) {
-                if ($dateTimeRange) {
+        $result = collect($ranges)->mapWithKeys(function (array $item, string $key)  {
+            return [$key => (collect($item)->map(function (Carbon $date)  {
                     return $date->format('Y-m-d H:i');
-                } else {
-                    return $date->format('Y-m-d');
-                }
             }))];
         })->toArray();
 
@@ -151,18 +131,9 @@ class Daterangepicker extends Filter
      */
     public function jsonSerialize(): array
     {
-        if ($this->dateTimeRange) {
             return array_merge(parent::jsonSerialize(), [
                 'minDate' => $this?->minDate?->format('Y-m-d H:i'),
                 'maxDate' => $this?->maxDate?->format('Y-m-d H:i'),
-                'dateTimeRange' => $this->dateTimeRange,
             ]);
-        } else {
-            return array_merge(parent::jsonSerialize(), [
-                'minDate' => $this?->minDate?->format('Y-m-d'),
-                'maxDate' => $this?->maxDate?->format('Y-m-d'),
-                'dateTimeRange' => $this->dateTimeRange,
-            ]);
-        }
     }
 }

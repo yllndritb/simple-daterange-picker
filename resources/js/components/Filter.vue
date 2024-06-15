@@ -5,26 +5,27 @@
       <div class="relative">
         <input type="text" class="hidden">
         <input
-          :id="id"
-          class="block w-full form-control form-control-sm form-input form-input-bordered text-sm px-1"
-          :class="{ 'text-white': (value == null) }"
-          type="text"
-          :dusk="`${filter.name}-daterange-filter`"
-          name="daterangefilter"
-          autocomplete="off"
-          :value="value"
-          :placeholder="placeholder"
-          @keydown="handleInput($event)"
-          @paste.prevent
+            :id="id"
+            class="block w-full form-control form-control-sm form-input form-input-bordered text-sm px-1"
+            :class="{ 'text-white': (value == null) }"
+            type="text"
+            :dusk="`${filter.name}-daterange-filter`"
+            name="daterangefilter"
+            autocomplete="off"
+            :value="value"
+            :placeholder="placeholder"
+            @keydown="handleInput($event)"
+            @paste.prevent
         />
         <div
-          v-if="value"
-          class="absolute top-0 right-0 mt-1 mr-1">
+            v-if="value"
+            class="absolute top-0 right-0 mt-1 mr-1">
           <button class="bg-transparent"
-            @click="clearFilter"
+                  @click="clearFilter"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                 stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
             </svg>
           </button>
         </div>
@@ -101,9 +102,9 @@ export default {
       this.$store.commit(`${this.resourceName}/updateFilterState`, {
         filterClass: this.filterKey,
         value: (
-          (this.currentStartDate && this.currentEndDate) ?
-          (this.currentStartDate.format('YYYY-MM-DD') + ' to ' + this.currentEndDate.format('YYYY-MM-DD')) :
-          null
+            (this.currentStartDate && this.currentEndDate) ?
+                (this.currentStartDate.format('YYYY-MM-DD HH:mm') + ' to ' + this.currentEndDate.format('YYYY-MM-DD HH:mm')) :
+                null
         ),
       })
 
@@ -113,9 +114,9 @@ export default {
       this.currentEndDate = null
     },
     handleInput(e) {
-        return e.preventDefault();
+      return e.preventDefault();
     },
-    initDateRange: function() {
+    initDateRange: function () {
       const ref = this
       const idSelector = ('#' + this.id)
       const minDate = ref.filter.minDate
@@ -123,32 +124,34 @@ export default {
       const dateTimeRange = ref.filter.dateTimeRange
 
       $(idSelector).daterangepicker({
-        "timePicker":  dateTimeRange ?? false,
+        "timePicker": true,
+        "timePickerIncrement": 30,
+        "timePicker24Hour": true,
         "startDate": ref.startDate,
-			  "endDate": ref.endDate,
+        "endDate": ref.endDate,
         "minDate": (minDate ? moment(minDate) : null),
         "maxDate": (maxDate ? moment(maxDate) : null),
         "ranges": ref.parseRanges(),
-      }, function(start, end, label) {
+      }, function (start, end, label) {
         if (start && end) {
           ref.currentStartDate = start
           ref.currentEndDate = end
         }
       })
-      .on('apply.daterangepicker', function(ev, picker) {
-        if (ref.currentStartDate && ref.currentEndDate) {
-          ref.value = ref.currentStartDate.format('MM/DD/YYYY') + ' to ' + ref.currentEndDate.format('MM/DD/YYYY')
-        }
-      })
+          .on('apply.daterangepicker', function (ev, picker) {
+            if (ref.currentStartDate && ref.currentEndDate) {
+              ref.value = ref.currentStartDate.format('MM/DD/YYYY') + ' to ' + ref.currentEndDate.format('MM/DD/YYYY')
+            }
+          })
     },
     clearFilter: function () {
       this.value = null
     },
     generateId: function () {
       return Math.random().toString(36).substring(2) +
-        (new Date()).getTime().toString(36);
+          (new Date()).getTime().toString(36);
     },
-    parseDates: function() {
+    parseDates: function () {
       const dateRange = this.filter.currentValue
       let startDate = moment()
       let endDate = moment()
@@ -157,9 +160,10 @@ export default {
         const parsedDateRange = dateRange.split(' to ')
         if (parsedDateRange.length == 2) {
           try {
-            startDate = moment(parsedDateRange[0], "YYYY-MM-DD")
-            endDate = moment(parsedDateRange[1], "YYYY-MM-DD")
-          } catch(e){}
+            startDate = moment(parsedDateRange[0], "YYYY-MM-DD HH:mm")
+            endDate = moment(parsedDateRange[1], "YYYY-MM-DD HH:mm")
+          } catch (e) {
+          }
         }
       }
       this.startDate = startDate.format('MM/DD/YYYY')
@@ -168,11 +172,11 @@ export default {
       this.currentStartDate = startDate
       this.currentEndDate = endDate
     },
-    parseRanges: function() {
+    parseRanges: function () {
       const ranges = this.filter.options;
       let parsedRanges = {};
 
-      for(let i=0; i<ranges.length; i++) {
+      for (let i = 0; i < ranges.length; i++) {
         parsedRanges[ranges[i]['label']] = [moment(ranges[i][0]), moment(ranges[i][1])]
       }
 
@@ -183,7 +187,7 @@ export default {
   computed: {
     filter() {
       return this.$store.getters[`${this.resourceName}/getFilter`](
-        this.filterKey
+          this.filterKey
       )
     },
   },
