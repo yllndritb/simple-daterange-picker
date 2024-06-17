@@ -80,19 +80,13 @@ export default {
             format: 'MM/DD/YYYY HH:mm',
             cancelLabel: 'Clear'
           }
-        }, function (start, end, label) {
-          if (start && end) {
-            ref.currentStartDate = start
-            ref.currentEndDate = end
-          }
         }).on('cancel.daterangepicker', function(ev, picker) {
-          $('#daterange').val('');
+          $(idSelector).val('');
           ref.value = ''
+          ref.handleChange('')
         })
             .on('apply.daterangepicker', function (ev, picker) {
-              if (ref.currentStartDate && ref.currentEndDate) {
-                ref.value = ref.currentStartDate.format('MM/DD/YYYY HH:mm') + ' to ' + ref.currentEndDate.format('MM/DD/YYYY HH:mm')
-              }
+              ref.value = picker.startDate.format('MM/DD/YYYY HH:mm') + ' to ' + picker.endDate.format('MM/DD/YYYY HH:mm')
             })
       }else{
         $(idSelector).daterangepicker({
@@ -104,18 +98,11 @@ export default {
             format: 'MM/DD/YYYY HH:mm',
             cancelLabel: 'Clear'
           }
-        }, function (start, end, label) {
-          if (start && end) {
-            ref.currentStartDate = start
-            ref.currentEndDate = end
-          }
         }).on('cancel.daterangepicker', function(ev, picker) {
-          $('#daterange').val('');
+          $(idSelector).val('');
           ref.value = ''
         }).on('apply.daterangepicker', function (ev, picker) {
-          if (ref.currentStartDate && ref.currentEndDate) {
-            ref.value = ref.currentStartDate.format('MM/DD/YYYY HH:mm') + ' to ' + ref.currentEndDate.format('MM/DD/YYYY HH:mm')
-          }
+          ref.value = picker.startDate.format('MM/DD/YYYY HH:mm') + ' to ' + picker.endDate.format('MM/DD/YYYY HH:mm')
         })
       }
 
