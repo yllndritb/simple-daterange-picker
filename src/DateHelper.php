@@ -2,109 +2,33 @@
 
 namespace Rpj\Daterangepicker;
 
-use Exception;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 
 class DateHelper
 {
-    const ALL = 'All';
-
-    const TODAY = 'Today';
-
-    const YESTERDAY = 'Yesterday';
-
-    const LAST_2_DAYS = 'Last 2 days';
-
-    const LAST_7_DAYS = 'Last 7 days';
-
-    const THIS_WEEK = 'This week';
-
-    const LAST_WEEK = 'Last week';
-
-    const LAST_30_DAYS = 'Last 30 days';
-
-    const THIS_MONTH = 'This month';
-
-    const LAST_MONTH = 'Last month';
-
-    const LAST_6_MONTHS = 'Last 6 months';
-
-    const THIS_YEAR = 'This year';
-
-    public static function defaultRanges(): array
+    /**
+     * Parse date range string and return array of start and end date.
+     *
+     * @param string|null $dateRange
+     * @return array
+     */
+    public static function parseDateRange($dateRange)
     {
-        return [
-            self::TODAY => [Carbon::today(), Carbon::today()],
-            self::YESTERDAY => [Carbon::yesterday(), Carbon::yesterday()],
-            self::LAST_7_DAYS => [Carbon::today()->subDays(6), Carbon::today()],
-            self::LAST_30_DAYS => [Carbon::today()->subDays(29), Carbon::today()],
-            self::THIS_MONTH => [Carbon::today()->startOfMonth(), Carbon::today()],
-            self::LAST_MONTH => [Carbon::today()->subMonth()->startOfMonth(), Carbon::today()->subMonth()->endOfMonth()],
-            self::THIS_YEAR => [Carbon::today()->startOfYear(), Carbon::today()],
-        ];
-    }
-
-    public static function getParsedDatesGroupedRanges($value): array
-    {
-        if ($value == self::ALL)
+        if (is_null($dateRange) || empty($dateRange)) {
             return [null, null];
-
-        $start = Carbon::now();
-        $end = $start->clone();
-
-        switch ($value) {
-            case self::TODAY:
-                break;
-            case self::YESTERDAY:
-                $start->subDay(1);
-                $end = $start->clone();
-                break;
-            case self::LAST_2_DAYS:
-                $start->subDays(1);
-                break;
-            case self::LAST_7_DAYS:
-                $start->subDays(6);
-                break;
-            case self::THIS_WEEK:
-                $start->startOfWeek(Carbon::MONDAY);
-                break;
-            case self::LAST_WEEK:
-                $start->startOfWeek(Carbon::MONDAY)->subWeek(1);
-                $end = $start->clone()->endOfWeek(Carbon::SUNDAY);
-                break;
-            case self::LAST_30_DAYS:
-                $start->subDays(30);
-                break;
-            case self::THIS_MONTH:
-                $start->startOfMonth();
-                break;
-            case self::LAST_MONTH:
-                $start->startOfMonth()->subMonth();
-                $end = $start->clone()->endOfMonth();
-                break;
-            case self::LAST_6_MONTHS:
-                $start->subMonths(6);
-                break;
-            case self::THIS_YEAR:
-                $start->startOfYear();
-                break;
-            default:
-                //Ex. 2020-06-15 to 2023-06-15
-                $parsed = explode(' to ', $value);
-                if (count($parsed) == 1) {
-                    $start = Carbon::createFromFormat('Y-m-d H:i', $value);
-                    $end = $start->clone();
-                } elseif (count($parsed) == 2) {
-                    $start = Carbon::createFromFormat('Y-m-d H:i', $parsed[0]);
-                    $end = Carbon::createFromFormat('Y-m-d H:i', $parsed[1]);
-                } else {
-                    throw new Exception('Date range picker: Date format incorrect.');
-                }
         }
 
-        return [
-            $start,
-            $end,
-        ];
+        $dates = explode(' to ', $dateRange);
+        if (count($dates) == 2) {
+            try {
+                $startDate = Carbon::createFromFormat('m/d/Y H:i', $dates[0]);
+                $endDate = Carbon::createFromFormat('m/d/Y H:i', $dates[1]);
+                return [$startDate, $endDate];
+            } catch (\Exception $e) {
+                return [null, null];
+            }
+        }
+
+        return [null, null];
     }
 }
